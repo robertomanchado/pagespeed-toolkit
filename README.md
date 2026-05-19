@@ -1,8 +1,28 @@
-# claude-pagespeed-toolkit
+# inforob/pagespeed-toolkit
 
-A Claude Code toolkit for achieving 90-100 PageSpeed scores on any web project.
+A Composer-installable Symfony Bundle + Claude Code toolkit for achieving 90-100 PageSpeed scores.
 
-It combines an **AI agent** that analyzes your project and recommends optimizations, a **slash command** that reads audit reports and applies fixes interactively, and **framework integrations** that generate the audit reports.
+It combines a **Symfony Bundle** with a console command that generates audit reports, an **AI agent** that analyzes your project and recommends optimizations, and a **slash command** that reads audit reports and applies fixes interactively.
+
+## Symfony Installation
+
+```bash
+composer require inforob/pagespeed-toolkit
+```
+
+That's it. The package automatically:
+
+- Registers `PageSpeedBundle` in `config/bundles.php`
+- Creates `config/packages/pagespeed.yaml` with default configuration
+- Adds `PAGESPEED_API_KEY` and `SITE_URL` placeholders to `.env`
+- Copies `/pagespeed-fix` and the `pagespeed-optimizer` agent into `.claude/`
+
+The only manual step: fill in your API key in `.env.local`:
+
+```dotenv
+PAGESPEED_API_KEY=your_google_api_key_here
+SITE_URL=https://your-site.com
+```
 
 ---
 
@@ -11,7 +31,7 @@ It combines an **AI agent** that analyzes your project and recommends optimizati
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │  1. AUDIT                                                       │
-│  Run an audit script → generates pagespeed-report.json         │
+│  Run an audit command → generates pagespeed-report.json         │
 │     • Symfony:  php bin/console pagespeed:audit                 │
 │     • Any stack: ./integrations/shell/pagespeed-audit.sh <url> │
 ├─────────────────────────────────────────────────────────────────┤

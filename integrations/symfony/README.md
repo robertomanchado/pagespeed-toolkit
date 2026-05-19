@@ -1,55 +1,23 @@
 # Symfony Integration
 
-Adds two Symfony console commands that plug into the Claude Code toolkit.
+> **This directory is kept for reference only.**
+> The official way to use this toolkit in Symfony is via Composer:
+>
+> ```bash
+> composer require inforob/pagespeed-toolkit
+> ```
+>
+> See the [main README](../../README.md) for full installation instructions.
 
-## Requirements
+---
 
-- PHP 8.1+
-- Symfony 6.x or 7.x
-- `symfony/http-client` (already included in most Symfony projects)
-- A [Google PageSpeed Insights API key](https://developers.google.com/speed/docs/insights/v5/get-started) (free tier allows ~25,000 requests/day)
+## What the bundle provides
 
-## Installation
+- **`pagespeed:audit`** console command — calls Google PageSpeed Insights and saves a JSON report
+- Auto-wired `PageSpeedService` available for injection in your own services
+- Configuration via `config/packages/pagespeed.yaml`
 
-### 1. Copy the source files
-
-```bash
-cp src/Service/PageSpeedService.php  your-project/src/Service/
-cp src/Command/PageSpeedAuditCommand.php  your-project/src/Command/
-```
-
-### 2. Add environment variables
-
-```dotenv
-# .env or .env.local
-PAGESPEED_API_KEY=your_google_api_key_here
-SITE_URL=https://your-site.com
-
-# Optional: comma-separated paths to audit (overrides the default list)
-PAGESPEED_URLS=/,/blog,/about,/contact
-```
-
-### 3. Register services
-
-Merge the following into your `config/services.yaml`:
-
-```yaml
-services:
-    App\Service\PageSpeedService:
-        arguments:
-            $apiKey: '%env(PAGESPEED_API_KEY)%'
-
-    App\Command\PageSpeedAuditCommand:
-        arguments:
-            $siteUrl: '%env(SITE_URL)%'
-            $projectDir: '%kernel.project_dir%'
-```
-
-Or copy `config/services.yaml` from this directory and adapt it.
-
-## Usage
-
-### Run an audit
+## Console command reference
 
 ```bash
 # Audit all configured pages (mobile + desktop)
@@ -68,25 +36,19 @@ php bin/console pagespeed:audit --strategy desktop
 php bin/console pagespeed:audit --output var/my-report.json
 ```
 
-The report is saved to `var/pagespeed-report.json` by default.
+## Configuration reference
 
-### Fix with Claude Code
-
-Once the report exists, open Claude Code in your project and run:
-
+```yaml
+# config/packages/pagespeed.yaml
+pagespeed:
+    api_key: '%env(PAGESPEED_API_KEY)%'   # required
+    site_url: '%env(SITE_URL)%'            # required
+    report_path: 'var/pagespeed-report.json'  # optional default
 ```
-/pagespeed-fix
-```
 
-Claude will read the report, present failing audits grouped by category, and apply fixes interactively with your confirmation.
+## Page list resolution order
 
-## How the page list is resolved
-
-Priority order:
-
-1. `--url /path` flag → single page
-2. `--urls /,/blog,/about` flag → explicit list
-3. `PAGESPEED_URLS` env var → comma-separated list from `.env`
-4. Hardcoded fallback: `/`, `/blog`, `/contact`, `/login`
-
-Customize by setting `PAGESPEED_URLS` in your `.env.local`.
+1. `--url /path` flag — single page
+2. `--urls /,/blog,/about` flag — explicit list
+3. `PAGESPEED_URLS` env var — comma-separated list from `.env`
+4. Fallback: `/`, `/blog`, `/contact`, `/login`

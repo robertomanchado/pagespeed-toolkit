@@ -1,3 +1,11 @@
+# Dependencies
+vendor/
+composer.lock
+
+# PHPUnit
+.phpunit.result.cache
+.phpunit.cache/
+
 # Audit reports (contain site-specific data)
 pagespeed-report.json
 var/pagespeed-report.json
